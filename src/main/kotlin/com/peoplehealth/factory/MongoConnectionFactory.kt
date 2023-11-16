@@ -1,6 +1,6 @@
 package com.peoplehealth.factory
 
-import com.peoplehealth.data.Patient
+import com.mongodb.client.MongoDatabase
 import org.litote.kmongo.KMongo
 import org.litote.kmongo.getCollection
 
@@ -12,7 +12,7 @@ class MongoConnectionFactory(
     private val client = KMongo.createClient()
 
     // default database
-    private val database = client.getDatabase(databaseName)
+    val database: MongoDatabase = client.getDatabase(databaseName)
 
-    fun <T> getCollection() = database.getCollection<Patient>()
+    inline fun <reified T : Any> getCollection() = database.getCollection<T>()
 }

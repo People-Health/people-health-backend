@@ -1,6 +1,7 @@
 package com.peoplehealth.repository
 
 import com.peoplehealth.data.User
+import com.peoplehealth.data.UserLevel
 
 interface UserRepository {
 
@@ -10,5 +11,5 @@ interface UserRepository {
 
     fun findUserByDocument(document: String): User?
 
-    fun findUsersByPermissionLevel(permissionLevel: Int): List<User>
+    fun findUsersByPermissionLevel(permissionLevel: UserLevel): List<User>
 }

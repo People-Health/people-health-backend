@@ -10,7 +10,7 @@ import org.litote.kmongo.findOne
 import org.litote.kmongo.save
 
 class PatientRepositoryImpl(
-    private val mongoConnectionFactory: MongoConnectionFactory
+    mongoConnectionFactory: MongoConnectionFactory
 ): PatientRepository {
 
     private val collection = mongoConnectionFactory.getCollection<Patient>()

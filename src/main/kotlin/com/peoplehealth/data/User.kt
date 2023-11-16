@@ -27,7 +27,10 @@ enum class UserLevel(val levelName: String) {
     MEDIC("Medico"),
     ADMINISTRATOR("Administrador");
 
-    fun getPermissionLevel(): Int {
+    fun getPermissions(): List<Permission> = Permission.entries
+        .filter { it.permissionLevel == this.getPermissionLevel() }
+
+    private fun getPermissionLevel(): Int {
         return this.ordinal + 1
     }
 }
