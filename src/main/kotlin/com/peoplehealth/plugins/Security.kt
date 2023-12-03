@@ -7,7 +7,7 @@ import io.ktor.server.routing.*
 
 fun Application.configureSecurity() {
     authentication {
-        basic(name = "myauth1") {
+        basic(name = "basic") {
             realm = "Ktor Server"
             validate { credentials ->
                 if (credentials.name == credentials.password) {
@@ -18,7 +18,7 @@ fun Application.configureSecurity() {
             }
         }
 
-        form(name = "myauth2") {
+        form(name = "basicx") {
             userParamName = "user"
             passwordParamName = "password"
             challenge {
@@ -27,13 +27,13 @@ fun Application.configureSecurity() {
         }
     }
     routing {
-        authenticate("myauth1") {
+        authenticate("basic") {
             get("/protected/route/basic") {
                 val principal = call.principal<UserIdPrincipal>()!!
                 call.respondText("Hello ${principal.name}")
             }
         }
-        authenticate("myauth2") {
+        authenticate("basic") {
             get("/protected/route/form") {
                 val principal = call.principal<UserIdPrincipal>()!!
                 call.respondText("Hello ${principal.name}")
