@@ -12,27 +12,24 @@ import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import org.koin.ktor.ext.inject
 
 fun Application.configureRouting() {
-    install(StatusPages) {
-        exception<Throwable> { call, cause ->
-            call.respondText(text = "500: $cause", status = HttpStatusCode.InternalServerError)
-        }
-    }
     routing {
         val patientRepository by inject<PatientRepository>()
         val userRepository by inject<UserRepository>()
 
         val coordsController by inject<CoordsController>()
 
-        authenticate("basic") {
+        authenticate("auth-basic") {
             post("/createPatient") {
                 patientRepository.savePatient(call.receive())
             }
 
             get("/coords") {
-                call.respond(coordsController.getCoords())
+                call.respond(HttpStatusCode.OK, Json.encodeToString(coordsController.getCoords().toString()))
             }
 
             get("/findPatientByName") {

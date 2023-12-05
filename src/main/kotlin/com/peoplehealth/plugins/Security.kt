@@ -7,11 +7,13 @@ import io.ktor.server.routing.*
 
 fun Application.configureSecurity() {
     authentication {
-        form(name = "basic") {
-            userParamName = "user"
-            passwordParamName = "password"
-            challenge {
-                /**/
+        basic("auth-basic") {
+            validate {
+                if (it.name == "user" && it.password == "password") {
+                    UserIdPrincipal(it.name)
+                } else {
+                    null
+                }
             }
         }
     }

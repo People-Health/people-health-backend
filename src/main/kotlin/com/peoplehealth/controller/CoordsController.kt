@@ -1,5 +1,7 @@
 package com.peoplehealth.controller
 
+import kotlinx.serialization.Serializable
+
 class CoordsController {
     private val coordsList = mutableListOf<Coords>()
 

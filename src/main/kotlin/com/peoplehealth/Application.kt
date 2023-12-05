@@ -28,8 +28,8 @@ fun Application.module() {
     configureKoin()
     configureCors()
     configureSecurity()
-    configureSockets()
     configureRouting()
+    configureSockets()
 }
 
 fun Application.configureCors() = install(CORS) {
