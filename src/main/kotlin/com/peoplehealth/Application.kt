@@ -1,5 +1,6 @@
 package com.peoplehealth
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.peoplehealth.controller.CoordsController
 import com.peoplehealth.factory.MongoConnectionFactory
 import com.peoplehealth.plugins.configureRouting
@@ -10,6 +11,8 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
+import io.ktor.server.plugins.contentnegotiation.*
+import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.plugins.cors.routing.*
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
@@ -17,6 +20,7 @@ import io.ktor.websocket.*
 import org.koin.dsl.module
 import org.koin.ktor.ext.inject
 import org.koin.ktor.plugin.Koin
+
 import java.time.Duration
 
 fun main() {
@@ -27,17 +31,26 @@ fun main() {
 fun Application.module() {
     configureKoin()
     configureCors()
+    configureJson()
     configureSecurity()
     configureRouting()
     configureSockets()
 }
 
+fun Application.configureJson() = install(ContentNegotiation) {
+    jacksonObjectMapper()
+}
+
 fun Application.configureCors() = install(CORS) {
-    allowMethod(HttpMethod.Options)
-    allowHeader(HttpHeaders.XForwardedProto)
-    anyHost()
+    exposeHeader("key")
+    allowMethod(HttpMethod.Get)
+    allowMethod(HttpMethod.Post)
+    allowMethod(HttpMethod.Put)
+    allowHeader(HttpHeaders.AccessControlAllowOrigin)
+    allowHeader(HttpHeaders.ContentType)
+    allowSameOrigin = true
     allowCredentials = true
-    allowNonSimpleContentTypes = true
+    anyHost()
 }
 
 fun Application.configureKoin() = install(Koin) {
@@ -66,7 +79,11 @@ fun Application.configureSockets() {
     routing {
         webSocket("/ws") {
             for (frame in incoming) {
-                if (frame is Frame.Text) coordsController.addCoords(frame.readText())
+                if (frame is Frame.Text) {
+                    coordsController.addCoords(frame.readText())
+                    println(coordsController.getCoords())
+                    println("received ->>> $frame")
+                }
             }
         }
     }

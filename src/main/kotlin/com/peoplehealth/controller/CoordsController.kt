@@ -12,5 +12,5 @@ class CoordsController {
 
     fun getCoords() = coordsList
 }
-
+@Serializable
 data class Coords(val latitude: Double, val longitude: Double)

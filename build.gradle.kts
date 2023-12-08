@@ -5,6 +5,8 @@ val logback_version: String by project
 plugins {
     kotlin("jvm") version "1.9.20"
     id("io.ktor.plugin") version "2.3.6"
+
+    kotlin("plugin.serialization") version "1.9.20"
 }
 
 group = "com.peoplehealth"
@@ -27,6 +29,7 @@ dependencies {
 
     // koin
     implementation("io.insert-koin:koin-ktor:$koin_version")
+    implementation("io.ktor:ktor-jackson:1.6.8")
 
     // server
     implementation("io.ktor:ktor-server-core-jvm")

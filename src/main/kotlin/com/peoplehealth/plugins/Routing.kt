@@ -14,7 +14,9 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.encodeToJsonElement
 import org.koin.ktor.ext.inject
+import org.litote.kmongo.json
 
 fun Application.configureRouting() {
     routing {
@@ -28,7 +30,8 @@ fun Application.configureRouting() {
         }
 
         get("/coords") {
-            call.respond(HttpStatusCode.OK, Json.encodeToString(coordsController.getCoords().toString()))
+            call.respondText(Json.encodeToString(coordsController.getCoords()), ContentType.Application.Json, HttpStatusCode.OK)
+            coordsController.getCoords().clear()
         }
 
         get("/findPatientByName") {
