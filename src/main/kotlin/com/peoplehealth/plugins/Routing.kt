@@ -23,67 +23,65 @@ fun Application.configureRouting() {
 
         val coordsController by inject<CoordsController>()
 
-        authenticate("auth-basic") {
-            post("/createPatient") {
-                patientRepository.savePatient(call.receive())
-            }
+        post("/createPatient") {
+            patientRepository.savePatient(call.receive())
+        }
 
-            get("/coords") {
-                call.respond(HttpStatusCode.OK, Json.encodeToString(coordsController.getCoords().toString()))
-            }
+        get("/coords") {
+            call.respond(HttpStatusCode.OK, Json.encodeToString(coordsController.getCoords().toString()))
+        }
 
-            get("/findPatientByName") {
-                call.parameters["name"]?.let { name ->
-                    patientRepository.findPatientByName(name)?.let { patient ->
-                        call.respond(patient)
-                    } ?: call.respondText(text = "Patient not found", status = HttpStatusCode.NotFound)
-                } ?: call.respondText(text = "Name not found", status = HttpStatusCode.NotFound)
-            }
+        get("/findPatientByName") {
+            call.parameters["name"]?.let { name ->
+                patientRepository.findPatientByName(name)?.let { patient ->
+                    call.respond(patient)
+                } ?: call.respondText(text = "Patient not found", status = HttpStatusCode.NotFound)
+            } ?: call.respondText(text = "Name not found", status = HttpStatusCode.NotFound)
+        }
 
-            get("/findPatientByDocument") {
-                call.parameters["document"]?.let { document ->
-                    patientRepository.findPatientByDocument(document)?.let { patient ->
-                        call.respond(patient)
-                    } ?: call.respondText(text = "Patient not found", status = HttpStatusCode.NotFound)
-                } ?: call.respondText(text = "Document not found", status = HttpStatusCode.NotFound)
-            }
+        get("/findPatientByDocument") {
+            call.parameters["document"]?.let { document ->
+                patientRepository.findPatientByDocument(document)?.let { patient ->
+                    call.respond(patient)
+                } ?: call.respondText(text = "Patient not found", status = HttpStatusCode.NotFound)
+            } ?: call.respondText(text = "Document not found", status = HttpStatusCode.NotFound)
+        }
 
-            post("/saveExamsByPatientDocument") {
-                call.parameters["document"]?.let { document ->
-                    call.receive<List<Exam>>().let { exams ->
-                        patientRepository.saveExamsByPatientDocument(document, exams)
-                        call.respondText(text = "Exams saved", status = HttpStatusCode.OK)
-                    }
-                } ?: call.respondText(text = "Document not found", status = HttpStatusCode.NotFound)
-            }
+        post("/saveExamsByPatientDocument") {
+            call.parameters["document"]?.let { document ->
+                call.receive<List<Exam>>().let { exams ->
+                    patientRepository.saveExamsByPatientDocument(document, exams)
+                    call.respondText(text = "Exams saved", status = HttpStatusCode.OK)
+                }
+            } ?: call.respondText(text = "Document not found", status = HttpStatusCode.NotFound)
+        }
 
-            post("/saveUser") {
-                userRepository.saveUser(call.receive())
-            }
+        post("/saveUser") {
+            userRepository.saveUser(call.receive())
+        }
 
-            get("/findUserByName") {
-                call.parameters["name"]?.let { name ->
-                    userRepository.findUserByName(name)?.let { user ->
-                        call.respond(user)
-                    } ?: call.respondText(text = "User not found", status = HttpStatusCode.NotFound)
-                } ?: call.respondText(text = "Name not found", status = HttpStatusCode.NotFound)
-            }
+        get("/findUserByName") {
+            call.parameters["name"]?.let { name ->
+                userRepository.findUserByName(name)?.let { user ->
+                    call.respond(user)
+                } ?: call.respondText(text = "User not found", status = HttpStatusCode.NotFound)
+            } ?: call.respondText(text = "Name not found", status = HttpStatusCode.NotFound)
+        }
 
-            get("/findUserByDocument") {
-                call.parameters["document"]?.let { document ->
-                    userRepository.findUserByDocument(document)?.let { user ->
-                        call.respond(user)
-                    } ?: call.respondText(text = "User not found", status = HttpStatusCode.NotFound)
-                } ?: call.respondText(text = "Document not found", status = HttpStatusCode.NotFound)
-            }
+        get("/findUserByDocument") {
+            call.parameters["document"]?.let { document ->
+                userRepository.findUserByDocument(document)?.let { user ->
+                    call.respond(user)
+                } ?: call.respondText(text = "User not found", status = HttpStatusCode.NotFound)
+            } ?: call.respondText(text = "Document not found", status = HttpStatusCode.NotFound)
+        }
 
-            get("/findUsersByPermissionLevel") {
-                call.parameters["permissionLevel"]?.let { permissionLevel ->
-                    userRepository.findUsersByPermissionLevel(UserLevel.valueOf(permissionLevel)).let { users ->
-                        call.respond(users)
-                    }
-                } ?: call.respondText(text = "Permission level not found", status = HttpStatusCode.NotFound)
-            }
+        get("/findUsersByPermissionLevel") {
+            call.parameters["permissionLevel"]?.let { permissionLevel ->
+                userRepository.findUsersByPermissionLevel(UserLevel.valueOf(permissionLevel)).let { users ->
+                    call.respond(users)
+                }
+            } ?: call.respondText(text = "Permission level not found", status = HttpStatusCode.NotFound)
         }
     }
 }
