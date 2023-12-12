@@ -3,8 +3,8 @@ package com.peoplehealth.plugins
 import com.peoplehealth.controller.CoordsController
 import com.peoplehealth.data.Exam
 import com.peoplehealth.data.UserLevel
-import com.peoplehealth.repository.PatientRepository
-import com.peoplehealth.repository.UserRepository
+import com.peoplehealth.service.PatientService
+import com.peoplehealth.service.UserService
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -14,19 +14,17 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.encodeToJsonElement
 import org.koin.ktor.ext.inject
-import org.litote.kmongo.json
 
 fun Application.configureRouting() {
     routing {
-        val patientRepository by inject<PatientRepository>()
-        val userRepository by inject<UserRepository>()
+        val patientservice by inject<PatientService>()
+        val userService by inject<UserService>()
 
         val coordsController by inject<CoordsController>()
 
         post("/createPatient") {
-            patientRepository.savePatient(call.receive())
+            patientservice.savePatient(call.receive())
         }
 
         get("/coords") {
@@ -36,52 +34,56 @@ fun Application.configureRouting() {
 
         get("/findPatientByName") {
             call.parameters["name"]?.let { name ->
-                patientRepository.findPatientByName(name)?.let { patient ->
+                patientservice.findPatientByName(name)?.let { patient ->
                     call.respond(patient)
-                } ?: call.respondText(text = "Patient not found", status = HttpStatusCode.NotFound)
+                }
             } ?: call.respondText(text = "Name not found", status = HttpStatusCode.NotFound)
         }
 
         get("/findPatientByDocument") {
             call.parameters["document"]?.let { document ->
-                patientRepository.findPatientByDocument(document)?.let { patient ->
+                patientservice.findPatientByDocument(document)?.let { patient ->
                     call.respond(patient)
-                } ?: call.respondText(text = "Patient not found", status = HttpStatusCode.NotFound)
+                }
             } ?: call.respondText(text = "Document not found", status = HttpStatusCode.NotFound)
         }
 
         post("/saveExamsByPatientDocument") {
             call.parameters["document"]?.let { document ->
                 call.receive<List<Exam>>().let { exams ->
-                    patientRepository.saveExamsByPatientDocument(document, exams)
+                    patientservice.findPatientByDocument(document)?.let { patient ->
+                        patient.get().exams.addAll(exams)
+                        patientservice.savePatient(patient.get())
+                        call.respondText(text = "Exams saved", status = HttpStatusCode.OK)
+                    }
                     call.respondText(text = "Exams saved", status = HttpStatusCode.OK)
                 }
             } ?: call.respondText(text = "Document not found", status = HttpStatusCode.NotFound)
         }
 
         post("/saveUser") {
-            userRepository.saveUser(call.receive())
+            userService.saveUser(call.receive())
         }
 
         get("/findUserByName") {
             call.parameters["name"]?.let { name ->
-                userRepository.findUserByName(name)?.let { user ->
+                userService.findUserByName(name)?.let { user ->
                     call.respond(user)
-                } ?: call.respondText(text = "User not found", status = HttpStatusCode.NotFound)
+                }
             } ?: call.respondText(text = "Name not found", status = HttpStatusCode.NotFound)
         }
 
         get("/findUserByDocument") {
             call.parameters["document"]?.let { document ->
-                userRepository.findUserByDocument(document)?.let { user ->
+                userService.findUserByDocument(document)?.let { user ->
                     call.respond(user)
-                } ?: call.respondText(text = "User not found", status = HttpStatusCode.NotFound)
+                }
             } ?: call.respondText(text = "Document not found", status = HttpStatusCode.NotFound)
         }
 
         get("/findUsersByPermissionLevel") {
             call.parameters["permissionLevel"]?.let { permissionLevel ->
-                userRepository.findUsersByPermissionLevel(UserLevel.valueOf(permissionLevel)).let { users ->
+                userService.findUsersByPermissionLevel(UserLevel.valueOf(permissionLevel)).let { users ->
                     call.respond(users)
                 }
             } ?: call.respondText(text = "Permission level not found", status = HttpStatusCode.NotFound)

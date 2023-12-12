@@ -17,7 +17,7 @@ enum class Permission(val permissionLevel: Int, val permission: String) {
     EXAMS(4, "Exames"),
     CREATE_PATIENTS(3, "Criar pacientes"),
     DELETE_PATIENTS(5, "Deletar pacientes"),
-    CREATE_USER(5, "Criar Useros"),
+    CREATE_USER(5, "Criar Users"),
 }
 
 enum class UserLevel(val levelName: String) {
@@ -27,8 +27,9 @@ enum class UserLevel(val levelName: String) {
     MEDIC("Medico"),
     ADMINISTRATOR("Administrador");
 
-    fun getPermissions(): List<Permission> = Permission.entries
-        .filter { it.permissionLevel == this.getPermissionLevel() }
+    fun getPermission(): List<Permission> {
+        return Permission.values().asList()
+    }
 
     private fun getPermissionLevel(): Int {
         return this.ordinal + 1
