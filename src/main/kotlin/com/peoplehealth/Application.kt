@@ -81,7 +81,7 @@ fun Application.configureSockets() {
             for (frame in incoming) {
                 if (frame is Frame.Text) {
                     coordsController.addCoords(frame.readText())
-                    println(coordsController.getCoords())
+                    println("coordenadas ${coordsController.getCoords()}")
                     println("received ->>> $frame")
                 }
             }
